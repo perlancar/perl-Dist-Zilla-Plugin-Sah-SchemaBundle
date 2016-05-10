@@ -50,7 +50,7 @@ sub munge_files {
                     my $nsch_dmp = Data::Dump::dump($nsch);
                     last if $sch_dmp eq $nsch_dmp;
                     my $diff = Text::Diff::diff(\$sch_dmp, \$nsch_dmp);
-                    $self->log_fatal("Schema in $file_name is not normalized, below is the dump diff: " . $diff);
+                    $self->log_fatal("Schema in $file_name is not normalized, below is the dump diff (- is current, + is normalized): " . $diff);
                 }
 
                 # set ABSTRACT from schema's summary
