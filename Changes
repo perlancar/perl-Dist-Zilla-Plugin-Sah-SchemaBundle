@@ -1,5 +1,13 @@
 Revision history for Dist-Zilla-Plugin-Sah-Schemas
 
+0.002   2016-07-20 (PERLANCAR)
+
+	- Add prereq to other Sah::Schema::* modules used by each
+	  Sah::Schema::* module in the distribution.
+
+	- Tweak error message to make it clearer.
+
+
 0.001   2016-05-08 (PERLANCAR)
 
         - First release.
