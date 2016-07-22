@@ -77,10 +77,12 @@ sub munge_files {
     $self->_load_schema_modules;
     $self->_load_schemas_modules;
 
+  SAH_SCHEMAS_MODULE:
     for my $pkg (sort keys %{ $self->{_our_schemas_modules} }) {
         # ...
     }
 
+  SAH_SCHEMA_MODULE:
     for my $pkg (sort keys %{ $self->{_our_schema_modules} }) {
         my $file = $self->{_our_schema_modules}{$pkg};
 
@@ -127,12 +129,19 @@ sub munge_files {
 
             for my $subsch ($nsch, @$subschemas) {
                 my $nsubsch = Data::Sah::Normalize::normalize_schema($subsch);
-                my $res = Data::Sah::Resolve::resolve_schema(
-                    {
-                        schema_is_normalized => 1,
-                        return_intermediates => 1,
-                    },
-                    $nsubsch);
+                my $res;
+                eval {
+                    $res = Data::Sah::Resolve::resolve_schema(
+                        {
+                            schema_is_normalized => 1,
+                            return_intermediates => 1,
+                        },
+                        $nsubsch);
+                };
+                if ($@) {
+                    $self->log(["Can't resolve schema (%s), skipped collecting base schemas for %s", $@, $pkg]);
+                    last COLLECT_BASE_SCHEMAS;
+                }
                 my $intermediates = $res->[2];
                 for my $i (0..$#{$intermediates}-1) {
                     my $mod = "Sah::Schema::$intermediates->[$i]";
@@ -160,15 +169,24 @@ sub munge_files {
         }
 
         # create lib/Sah/SchemaR/*.pm
+      CREATE_SCHEMAR:
         {
             require Data::Dump;
             require Data::Sah::Resolve;
             require Dist::Zilla::File::InMemory;
 
-            my $rschema = Data::Sah::Resolve::resolve_schema(
-                {return_intermediates => 1},
-                $sch,
-            );
+            my $rschema;
+            eval {
+                $rschema = Data::Sah::Resolve::resolve_schema(
+                    {return_intermediates => 1},
+                    $sch,
+                );
+            };
+            if ($@) {
+                $self->log(["Can't resolve schema (%s), skipped creating SchemaR version for %s", $@, $pkg]);
+                last CREATE_SCHEMAR;
+            }
+
             my $rname = $file->name; $rname =~ s!^lib/Sah/Schema/!lib/Sah/SchemaR/!;
             my $rpkg  = $pkg; $rpkg =~ s/^Sah::Schema::/Sah::SchemaR::/;
             my $rfile = Dist::Zilla::File::InMemory->new(
