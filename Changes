@@ -1,5 +1,11 @@
 Revision history for Dist-Zilla-Plugin-Sah-Schemas
 
+0.003   2016-07-22 (PERLANCAR)
+
+	- Produce Sah::SchemaR::* modules (pre-resolved edition of
+	  schemas).
+
+
 0.002   2016-07-20 (PERLANCAR)
 
 	- Add prereq to other Sah::Schema::* modules used by each
