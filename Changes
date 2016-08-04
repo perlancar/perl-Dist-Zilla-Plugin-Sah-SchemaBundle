@@ -1,5 +1,13 @@
 Revision history for Dist-Zilla-Plugin-Sah-Schemas
 
+0.004   2016-08-04 (PERLANCAR)
+
+	- Add some description in generated Sah::SchemaR::* about what the
+	  module is for.
+
+	- Handle (skip) when schema cannot be resolved, e.g. recursive.
+
+
 0.003   2016-07-22 (PERLANCAR)
 
 	- Produce Sah::SchemaR::* modules (pre-resolved edition of
