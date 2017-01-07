@@ -1,5 +1,3 @@
-Revision history for Dist-Zilla-Plugin-Sah-Schemas
-
 0.005   2016-12-26 (PERLANCAR)
 
 	- Fix typo in generated text [RT#119466].
