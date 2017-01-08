@@ -17,6 +17,7 @@ with (
         default_finders => [':InstallModules'],
     },
     'Dist::Zilla::Role::PrereqSource',
+    'Dist::Zilla::Role::RequireFromBuild',
 );
 
 sub _load_schema_modules {
@@ -26,18 +27,11 @@ sub _load_schema_modules {
 
     my %res;
     for my $file (@{ $self->found_files }) {
-        unless ($file->isa("Dist::Zilla::File::OnDisk")) {
-            $self->log_debug(["skipping %s: not an ondisk file, currently only ondisk files are processed", $file->name]);
-            next;
-        }
         next unless $file->name =~ m!^lib/(Sah/Schema/.+\.pm)$!;
+
         my $pkg_pm = $1;
         (my $pkg = $pkg_pm) =~ s/\.pm$//; $pkg =~ s!/!::!g;
-        {
-            local @INC = ("lib", @INC);
-            require $pkg_pm;
-            $res{$pkg} = $file;
-        }
+        $self->require_from_build($pkg_pm);
     }
 
     $self->{_our_schema_modules} = \%res;
@@ -57,11 +51,7 @@ sub _load_schemas_modules {
         next unless $file->name =~ m!^lib/(Sah/Schemas/.+\.pm)$!;
         my $pkg_pm = $1;
         (my $pkg = $pkg_pm) =~ s/\.pm$//; $pkg =~ s!/!::!g;
-        {
-            local @INC = ("lib", @INC);
-            require $pkg_pm;
-            $res{$pkg} = $file;
-        }
+        $self->require_from_build($pkg_pm);
     }
 
     $self->{_our_schemas_modules} = \%res;
