@@ -1,3 +1,8 @@
+0.006   2017-01-09 (PERLANCAR)
+
+	- Use Dist::Zilla::Role::RequireFromBuild.
+
+
 0.005   2016-12-26 (PERLANCAR)
 
 	- Fix typo in generated text [RT#119466].
