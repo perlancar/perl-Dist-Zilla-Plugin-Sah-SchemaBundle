@@ -10,6 +10,8 @@ use warnings;
 use Moose;
 use namespace::autoclean;
 
+use Require::Hook::DzilBuild;
+
 with (
     'Dist::Zilla::Role::FileGatherer',
     'Dist::Zilla::Role::FileMunger',
@@ -17,7 +19,7 @@ with (
         default_finders => [':InstallModules'],
     },
     'Dist::Zilla::Role::PrereqSource',
-    'Dist::Zilla::Role::RequireFromBuild',
+    #'Dist::Zilla::Role::RequireFromBuild',
 );
 
 sub _load_schema_modules {
@@ -25,13 +27,16 @@ sub _load_schema_modules {
 
     return $self->{_our_schema_modules} if $self->{_loaded_schema_modules}++;
 
+    local @INC = (Require::Hook::DzilBuild->new(zilla => $self->zilla, die=>1), @INC);
+
     my %res;
     for my $file (@{ $self->found_files }) {
         next unless $file->name =~ m!^lib/(Sah/Schema/.+\.pm)$!;
 
         my $pkg_pm = $1;
         (my $pkg = $pkg_pm) =~ s/\.pm$//; $pkg =~ s!/!::!g;
-        $self->require_from_build($pkg_pm);
+        #$self->require_from_build($pkg_pm);
+        require $pkg_pm;
     }
 
     $self->{_our_schema_modules} = \%res;
@@ -42,6 +47,8 @@ sub _load_schemas_modules {
 
     return $self->{_our_schemas_modules} if $self->{_loaded_schemas_modules}++;
 
+    local @INC = (Require::Hook::DzilBuild->new(zilla => $self->zilla, die=>1), @INC);
+
     my %res;
     for my $file (@{ $self->found_files }) {
         unless ($file->isa("Dist::Zilla::File::OnDisk")) {
@@ -51,7 +58,7 @@ sub _load_schemas_modules {
         next unless $file->name =~ m!^lib/(Sah/Schemas/.+\.pm)$!;
         my $pkg_pm = $1;
         (my $pkg = $pkg_pm) =~ s/\.pm$//; $pkg =~ s!/!::!g;
-        $self->require_from_build($pkg_pm);
+        #$self->require_from_build($pkg_pm);
     }
 
     $self->{_our_schemas_modules} = \%res;
