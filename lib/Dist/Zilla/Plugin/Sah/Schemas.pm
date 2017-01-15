@@ -35,8 +35,8 @@ sub _load_schema_modules {
 
         my $pkg_pm = $1;
         (my $pkg = $pkg_pm) =~ s/\.pm$//; $pkg =~ s!/!::!g;
-        #$self->require_from_build($pkg_pm);
         require $pkg_pm;
+        $res{$pkg} = $file;
     }
 
     $self->{_our_schema_modules} = \%res;
@@ -58,7 +58,8 @@ sub _load_schemas_modules {
         next unless $file->name =~ m!^lib/(Sah/Schemas/.+\.pm)$!;
         my $pkg_pm = $1;
         (my $pkg = $pkg_pm) =~ s/\.pm$//; $pkg =~ s!/!::!g;
-        #$self->require_from_build($pkg_pm);
+        require $pkg_pm;
+        $res{$pkg} = $file;
     }
 
     $self->{_our_schemas_modules} = \%res;
