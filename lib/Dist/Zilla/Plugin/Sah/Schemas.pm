@@ -27,7 +27,7 @@ sub _load_schema_modules {
 
     return $self->{_our_schema_modules} if $self->{_loaded_schema_modules}++;
 
-    local @INC = (Require::Hook::DzilBuild->new(zilla => $self->zilla, die=>1), @INC);
+    local @INC = (Require::Hook::DzilBuild->new(zilla => $self->zilla, die=>1, debug=>1), @INC);
 
     my %res;
     for my $file (@{ $self->found_files }) {
@@ -35,6 +35,7 @@ sub _load_schema_modules {
 
         my $pkg_pm = $1;
         (my $pkg = $pkg_pm) =~ s/\.pm$//; $pkg =~ s!/!::!g;
+        $self->log_debug(["Loading schema module %s ...", $pkg_pm]);
         require $pkg_pm;
         $res{$pkg} = $file;
     }
@@ -47,14 +48,10 @@ sub _load_schemas_modules {
 
     return $self->{_our_schemas_modules} if $self->{_loaded_schemas_modules}++;
 
-    local @INC = (Require::Hook::DzilBuild->new(zilla => $self->zilla, die=>1), @INC);
+    local @INC = (Require::Hook::DzilBuild->new(zilla => $self->zilla, die=>1, debug=>1), @INC);
 
     my %res;
     for my $file (@{ $self->found_files }) {
-        unless ($file->isa("Dist::Zilla::File::OnDisk")) {
-            $self->log_debug(["skipping %s: not an ondisk file, currently only ondisk files are processed", $file->name]);
-            next;
-        }
         next unless $file->name =~ m!^lib/(Sah/Schemas/.+\.pm)$!;
         my $pkg_pm = $1;
         (my $pkg = $pkg_pm) =~ s/\.pm$//; $pkg =~ s!/!::!g;
