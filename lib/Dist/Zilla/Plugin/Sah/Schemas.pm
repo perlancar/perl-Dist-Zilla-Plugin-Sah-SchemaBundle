@@ -166,7 +166,7 @@ sub munge_files {
         # create lib/Sah/SchemaR/*.pm
       CREATE_SCHEMAR:
         {
-            require Data::Dump;
+            require Data::Dmp;
             require Data::Sah::Resolve;
             require Dist::Zilla::File::InMemory;
 
@@ -195,7 +195,7 @@ sub munge_files {
                     "# VERSION\n",
                     "\n",
 
-                    "our \$rschema = ", Data::Dump::dump($rschema), ";\n",
+                    "our \$rschema = ", Data::Dmp::dmp($rschema), ";\n",
                     "\n",
 
                     "1;\n",
