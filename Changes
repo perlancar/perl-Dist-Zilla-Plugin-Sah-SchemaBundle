@@ -1,3 +1,8 @@
+0.008   2017-01-31 (PERLANCAR)
+
+	- Replace Data::Dump with Data::Dmp so we can deparse coderefs.
+
+
 0.007   2017-01-15 (PERLANCAR)
 
 	- [Bugfix] Fix regression bug when introducing use of
