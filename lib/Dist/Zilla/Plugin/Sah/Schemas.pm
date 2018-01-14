@@ -234,11 +234,14 @@ sub register_prereqs {
 
     for my $mod (sort keys %{$self->{_our_schema_modules} // {}}) {
         my $nsch = ${"$mod\::schema"};
-        if ($nsch->[1]{'x.completion'}) {
-            my $xcmod = "Perinci::Sub::XCompletion::".
-                $nsch->[1]{'x.completion'};
-            $self->log(["Adding prereq to %s", $xcmod]);
-            $self->zilla->register_prereqs({phase=>'runtime'}, $xcmod => 0);
+        if (my $xc = $nsch->[1]{'x.completion'}) {
+            my @c = ref($xc) eq 'CODE' ? () :
+                ref($xc) eq 'ARRAY' ? @$xc : ($xc);
+            for my $c (@c) {
+                my $xcmod = "Perinci::Sub::XCompletion::$c";
+                $self->log(["Adding prereq to %s", $xcmod]);
+                $self->zilla->register_prereqs({phase=>'runtime'}, $xcmod => 0);
+            }
         }
     }
 }
