@@ -1,3 +1,9 @@
+0.010   2018-01-14 (PERLANCAR)
+
+	- [Bugfix] Handle cases where x.completion is an arrayref or
+	  coderef.
+
+
 0.009   2018-01-14 (PERLANCAR)
 
 	- Add prereq to Perinci::Sub::XCompletion::* modules.
