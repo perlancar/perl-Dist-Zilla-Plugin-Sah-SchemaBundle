@@ -220,13 +220,26 @@ sub gather_files {
 }
 
 sub register_prereqs {
+    no strict 'refs';
+
     my $self = shift;
 
     #use DD; dd $self->{_used_schema_modules}; dd $self->{_our_schema_modules};
     for my $mod (sort keys %{$self->{_used_schema_modules} // {}}) {
         next if $self->{_our_schema_modules}{$mod};
         $self->log(["Adding prereq to %s", $mod]);
-        $self->zilla->register_prereqs({phase=>'runtime'}, $mod);
+        $self->zilla->register_prereqs({phase=>'runtime'}, $mod => 0);
+        # add prereq to XCompletion modules
+    }
+
+    for my $mod (sort keys %{$self->{_our_schema_modules} // {}}) {
+        my $nsch = ${"$mod\::schema"};
+        if ($nsch->[1]{'x.completion'}) {
+            my $xcmod = "Perinci::Sub::XCompletion::".
+                $nsch->[1]{'x.completion'};
+            $self->log(["Adding prereq to %s", $xcmod]);
+            $self->zilla->register_prereqs({phase=>'runtime'}, $xcmod => 0);
+        }
     }
 }
 
