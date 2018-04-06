@@ -36,6 +36,7 @@ sub _load_schema_modules {
         my $pkg_pm = $1;
         (my $pkg = $pkg_pm) =~ s/\.pm$//; $pkg =~ s!/!::!g;
         $self->log_debug(["Loading schema module %s ...", $pkg_pm]);
+        delete $INC{$pkg_pm};
         require $pkg_pm;
         $res{$pkg} = $file;
     }
