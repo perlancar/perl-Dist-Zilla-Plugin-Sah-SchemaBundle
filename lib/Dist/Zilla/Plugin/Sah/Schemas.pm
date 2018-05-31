@@ -225,16 +225,18 @@ sub register_prereqs {
 
     my $self = shift;
 
+    # add prereqs to base schema modules
+
     #use DD; dd $self->{_used_schema_modules}; dd $self->{_our_schema_modules};
     for my $mod (sort keys %{$self->{_used_schema_modules} // {}}) {
         next if $self->{_our_schema_modules}{$mod};
         $self->log(["Adding prereq to %s", $mod]);
         $self->zilla->register_prereqs({phase=>'runtime'}, $mod => 0);
-        # add prereq to XCompletion modules
     }
 
     for my $mod (sort keys %{$self->{_our_schema_modules} // {}}) {
         my $nsch = ${"$mod\::schema"};
+        # add prereqs to XCompletion modules
         if (my $xc = $nsch->[1]{'x.completion'}) {
             my @c = ref($xc) eq 'CODE' ? () :
                 ref($xc) eq 'ARRAY' ? @$xc : ($xc);
@@ -242,6 +244,17 @@ sub register_prereqs {
                 my $xcmod = "Perinci::Sub::XCompletion::$c";
                 $self->log(["Adding prereq to %s", $xcmod]);
                 $self->zilla->register_prereqs({phase=>'runtime'}, $xcmod => 0);
+            }
+        }
+        # add prereqs to coerce modules
+        for my $key ('x.coerce_rules', 'x.perl.coerce_rules') {
+            my $crr = $nsch->[1]{$key};
+            next unless $crr && @$crr;
+            for my $rule (@$crr) {
+                next unless $rule =~ /\A\w+(::\w+)*\z/;
+                my $crmod = "Data::Sah::Coerce::perl::$nsch->[0]::$rule";
+                $self->log(["Adding prereq to %s", $crmod]);
+                $self->zilla->register_prereqs({phase=>'runtime'}, $crmod => 0);
             }
         }
     }
