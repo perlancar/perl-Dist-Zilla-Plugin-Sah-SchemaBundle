@@ -224,6 +224,7 @@ sub gather_files {
 
 sub register_prereqs {
     no strict 'refs';
+    require Data::Sah::Resolve;
 
     my $self = shift;
 
@@ -237,6 +238,7 @@ sub register_prereqs {
 
     for my $mod (sort keys %{$self->{_our_schema_modules} // {}}) {
         my $nsch = ${"$mod\::schema"};
+        my $rsch = Data::Sah::Resolve::resolve_schema($nsch);
         # add prereqs to XCompletion modules
         if (my $xc = $nsch->[1]{'x.completion'}) {
             my @c = ref($xc) eq 'CODE' ? () :
@@ -254,7 +256,7 @@ sub register_prereqs {
             next unless $crr && @$crr;
             for my $rule (@$crr) {
                 next unless $rule =~ /\A\w+(::\w+)*\z/;
-                my $crmod = "Data::Sah::Coerce::perl::$nsch->[0]::$rule";
+                my $crmod = "Data::Sah::Coerce::perl::$rsch->[0]::$rule";
                 next if $self->is_package_declared($crmod);
                 $self->log(["Adding prereq to %s", $crmod]);
                 $self->zilla->register_prereqs({phase=>'runtime'}, $crmod => version_from_pmversions($crmod) // 0);
