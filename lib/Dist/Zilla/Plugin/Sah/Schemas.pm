@@ -256,7 +256,7 @@ sub register_prereqs {
             next unless $crr && @$crr;
             for my $rule (@$crr) {
                 next unless $rule =~ /\A\w+(::\w+)*\z/;
-                my $crmod = "Data::Sah::Coerce::perl::$rsch->[0]::$rule";
+                my $crmod = "Data::Sah::Coerce::perl::To_$rsch->[0]::$rule";
                 next if $self->is_package_declared($crmod);
                 $self->log(["Adding prereq to %s", $crmod]);
                 $self->zilla->register_prereqs({phase=>'runtime'}, $crmod => version_from_pmversions($crmod) // 0);
