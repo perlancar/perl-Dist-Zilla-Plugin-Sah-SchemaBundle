@@ -1,3 +1,11 @@
+0.016   2019-11-28  Released-By: PERLANCAR; Urgency: medium
+
+	- Update naming of Sah coerce rule module from
+	  Data::Sah::Coerce::<TARGET_TYPE>::<RULE_NAME> to
+	  Data::Sah::Coerce::To_<TARGET_TYPE>::<RULE_NAME>
+	  (Data::Sah::Coerce 0.034+).
+
+
 0.015   2019-05-07  Released-By: PERLANCAR
 
 	- [bugfix] Fix adding prereq to coerce rule modules, should be
