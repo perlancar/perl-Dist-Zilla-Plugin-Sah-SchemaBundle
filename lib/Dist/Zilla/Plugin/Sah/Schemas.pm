@@ -266,15 +266,15 @@ sub register_prereqs {
         my $nsch = ${"$mod\::schema"};
         my $rsch = Data::Sah::Resolve::resolve_schema($nsch);
         # add prereqs to XCompletion modules
-        if (my $xc = $nsch->[1]{'x.completion'}) {
-            my @c = ref($xc) eq 'CODE' ? () :
-                ref($xc) eq 'ARRAY' ? @$xc : ($xc);
-            for my $c (@c) {
-                my $xcmod = "Perinci::Sub::XCompletion::$c";
-                next if $self->is_package_declared($xcmod);
-                $self->log(["Adding prereq to %s", $xcmod]);
-                $self->zilla->register_prereqs({phase=>'runtime'}, $xcmod => version_from_pmversions($xcmod) // 0);
-            }
+        {
+            my $xc = $nsch->[1]{'x.completion'};
+            last unless $xc;
+            last if ref $xc eq 'CODE';
+            $xc = $xc->[0] if ref $xc eq 'ARRAY';
+            my $xcmod = "Perinci::Sub::XCompletion::$xc";
+            next if $self->is_package_declared($xcmod);
+            $self->log(["Adding prereq to %s", $xcmod]);
+            $self->zilla->register_prereqs({phase=>'runtime'}, $xcmod => version_from_pmversions($xcmod) // 0);
         }
         # add prereqs to coerce modules
         for my $key ('x.coerce_rules', 'x.perl.coerce_rules') {
