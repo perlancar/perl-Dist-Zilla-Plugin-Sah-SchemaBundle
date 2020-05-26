@@ -24,7 +24,11 @@ with (
     #'Dist::Zilla::Role::RequireFromBuild',
 );
 
+has exclude_module => (is => 'rw');
+
 use namespace::autoclean;
+
+sub mvp_multivalue_args { qw(exclude_module) }
 
 sub _load_schema_modules {
     my $self = shift;
@@ -39,6 +43,12 @@ sub _load_schema_modules {
 
         my $pkg_pm = $1;
         (my $pkg = $pkg_pm) =~ s/\.pm$//; $pkg =~ s!/!::!g;
+
+        if ($self->exclude_module && grep { $pkg eq $_ } @{ $self->exclude_module }) {
+            $self->log_debug(["Sah schema module %s excluded", $pkg]);
+            next;
+        }
+
         $self->log_debug(["Loading schema module %s ...", $pkg_pm]);
         delete $INC{$pkg_pm};
         require $pkg_pm;
@@ -341,6 +351,11 @@ having to do any extra resolving. Currently L<Perinci::Sub::Complete> uses this
 to reduce startup overhead when doing tab completion.
 
 =back
+
+
+=head1 CONFIGURATION
+
+=head2 exclude_module
 
 
 =head1 SEE ALSO
