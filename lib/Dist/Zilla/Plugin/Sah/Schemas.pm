@@ -261,7 +261,7 @@ sub register_prereqs {
             type  => 'requires',
             phase => 'develop',
         },
-        'Test::Sah::Schema' => '0',
+        'Test::Sah::Schema' => '0.009',
     );
 
     # add prereqs to base schema modules
