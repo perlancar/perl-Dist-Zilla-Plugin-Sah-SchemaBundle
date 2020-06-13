@@ -1,3 +1,8 @@
+0.020   2020-06-13  Released-By: PERLANCAR; Urgency: medium
+
+	- Bump prereq version of Test::Sah::Schema.
+
+
 0.019   2020-05-27  Released-By: PERLANCAR; Urgency: medium
 
 	- Add configuration: exclude_module.
