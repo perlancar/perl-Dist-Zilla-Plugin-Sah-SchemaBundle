@@ -11,7 +11,7 @@ use warnings;
 use Moose;
 
 use PMVersions::Util qw(version_from_pmversions);
-use Require::Hook::DzilBuild;
+use Require::Hook::Source::DzilBuild;
 
 with (
     'Dist::Zilla::Role::CheckPackageDeclared',
@@ -35,7 +35,7 @@ sub _load_schema_modules {
 
     return $self->{_our_schema_modules} if $self->{_loaded_schema_modules}++;
 
-    local @INC = (Require::Hook::DzilBuild->new(zilla => $self->zilla, die=>1, debug=>1), @INC);
+    local @INC = (Require::Hook::Source::DzilBuild->new(zilla => $self->zilla, die=>1, debug=>1), @INC);
 
     my %res;
     for my $file (@{ $self->found_files }) {
@@ -63,7 +63,7 @@ sub _load_schemas_modules {
 
     return $self->{_our_schemas_modules} if $self->{_loaded_schemas_modules}++;
 
-    local @INC = (Require::Hook::DzilBuild->new(zilla => $self->zilla, die=>1, debug=>1), @INC);
+    local @INC = (Require::Hook::Source::DzilBuild->new(zilla => $self->zilla, die=>1, debug=>1), @INC);
 
     my %res;
     for my $file (@{ $self->found_files }) {
