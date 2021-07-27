@@ -134,7 +134,6 @@ sub munge_files {
                     $res = Data::Sah::Resolve::resolve_schema(
                         {
                             schema_is_normalized => 1,
-                            return_intermediates => 1,
                         },
                         $nsubsch);
                 };
@@ -142,7 +141,7 @@ sub munge_files {
                     $self->log(["Can't resolve schema (%s), skipped collecting base schemas for %s", $@, $pkg]);
                     last COLLECT_BASE_SCHEMAS;
                 }
-                my $intermediates = $res->[2];
+                my $intermediates = $res->[2]{intermediates};
                 for my $i (0..$#{$intermediates}-1) {
                     my $mod = "Sah::Schema::$intermediates->[$i]";
                     $self->{_used_schema_modules}{$mod}++;
@@ -178,7 +177,7 @@ sub munge_files {
             my $rschema;
             eval {
                 $rschema = Data::Sah::Resolve::resolve_schema(
-                    {return_intermediates => 1},
+                    {},
                     $sch,
                 );
             };
