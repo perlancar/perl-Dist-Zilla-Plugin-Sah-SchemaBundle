@@ -141,9 +141,9 @@ sub munge_files {
                     $self->log(["Can't resolve schema (%s), skipped collecting base schemas for %s", $@, $pkg]);
                     last COLLECT_BASE_SCHEMAS;
                 }
-                my $intermediates = $res->[2]{intermediates};
-                for my $i (0..$#{$intermediates}-1) {
-                    my $mod = "Sah::Schema::$intermediates->[$i]";
+                my $resolve_path = $res->{resolve_path};
+                for my $i (1..$#{$resolve_path}) {
+                    my $mod = "Sah::Schema::$resolve_path->[$i]";
                     $self->{_used_schema_modules}{$mod}++;
                 }
             }
