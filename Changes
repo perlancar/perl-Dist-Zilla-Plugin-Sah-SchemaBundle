@@ -1,3 +1,9 @@
+0.026   2021-07-29  Released-By: PERLANCAR; Urgency: medium
+
+	- [bugfix] Still assume old Data::Sah::Resolve (0.009-) return
+	  structure.
+
+
 0.025   2021-07-29  Released-By: PERLANCAR; Urgency: medium
 
 	- Bump prereq version Data::Sah::Util::Subschema to 0.005.
