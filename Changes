@@ -1,3 +1,8 @@
+0.025   2021-07-29  Released-By: PERLANCAR; Urgency: medium
+
+	- Bump prereq version Data::Sah::Util::Subschema to 0.005.
+
+
 0.024   2021-07-29  Released-By: PERLANCAR; Urgency: medium
 
 	- Update to Data::Sah::Resolve 0.010.
