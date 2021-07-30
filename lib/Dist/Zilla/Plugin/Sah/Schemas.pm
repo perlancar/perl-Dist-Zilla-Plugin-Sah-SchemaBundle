@@ -356,6 +356,11 @@ to reduce startup overhead when doing tab completion.
 
 =head2 exclude_module
 
+Currently this means to exclude loading the specified schema module during
+build, skip resolving the schema, skip parsing the schema and extracting
+prerequisites from the schema, the and skip creating the corresponding
+C<Sah::SchemaR::*> module.
+
 
 =head1 SEE ALSO
 
