@@ -273,7 +273,7 @@ sub register_prereqs {
 
     for my $mod (sort keys %{$self->{_our_schema_modules} // {}}) {
         my $nsch = ${"$mod\::schema"};
-        my $rsch = Data::Sah::Resolve::resolve_schema($nsch);
+        my $schr = Data::Sah::Resolve::resolve_schema($nsch);
         # add prereqs to XCompletion modules
         {
             my $xc = $nsch->[1]{'x.completion'};
@@ -291,7 +291,7 @@ sub register_prereqs {
             next unless $crr && @$crr;
             for my $rule (@$crr) {
                 next unless $rule =~ /\A\w+(::\w+)*\z/;
-                my $crmod = "Data::Sah::Coerce::perl::To_$rsch->[0]::$rule";
+                my $crmod = "Data::Sah::Coerce::perl::To_$rsch->{type}::$rule";
                 next if $self->is_package_declared($crmod);
                 $self->log(["Adding prereq to %s", $crmod]);
                 $self->zilla->register_prereqs({phase=>'runtime'}, $crmod => version_from_pmversions($crmod) // 0);
