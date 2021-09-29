@@ -192,6 +192,7 @@ sub munge_files {
                 name => $rname,
                 content => join(
                     "",
+                    "## no critic: TestingAndDebugging::RequireStrict\n",
                     "package $rpkg;\n",
                     "\n",
 
