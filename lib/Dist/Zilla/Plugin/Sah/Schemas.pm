@@ -1,10 +1,5 @@
 package Dist::Zilla::Plugin::Sah::Schemas;
 
-# AUTHORITY
-# DATE
-# DIST
-# VERSION
-
 use 5.010001;
 use strict;
 use warnings;
@@ -12,6 +7,11 @@ use Moose;
 
 use PMVersions::Util qw(version_from_pmversions);
 use Require::Hook::Source::DzilBuild;
+
+# AUTHORITY
+# DATE
+# DIST
+# VERSION
 
 with (
     'Dist::Zilla::Role::CheckPackageDeclared',
@@ -78,7 +78,7 @@ sub _load_schemas_modules {
 }
 
 sub munge_files {
-    no strict 'refs';
+    no strict 'refs'; ## no critic: TestingAndDebugging::ProhibitNoStrict
 
     my $self = shift;
 
@@ -249,7 +249,7 @@ _
 }
 
 sub register_prereqs {
-    no strict 'refs';
+    no strict 'refs'; ## no critic: TestingAndDebugging::ProhibitNoStrict
     require Data::Sah::Resolve;
 
     my $self = shift;
