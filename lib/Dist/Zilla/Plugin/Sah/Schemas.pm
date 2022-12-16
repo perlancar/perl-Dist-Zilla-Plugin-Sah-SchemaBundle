@@ -26,9 +26,9 @@ with (
 
 has exclude_module => (is => 'rw');
 
-has preamble => (is => 'rw');
+has schemar_preamble => (is => 'rw');
 
-has postamble => (is => 'rw');
+has schemar_postamble => (is => 'rw');
 
 use namespace::autoclean;
 
@@ -200,7 +200,7 @@ sub munge_files {
                     "package $rpkg;\n",
                     "\n",
 
-                    (defined($self->preamble) ? ("# preamble code\n", $self->preamble, "\n\n") : ()),
+                    (defined($self->schemar_preamble) ? ("# preamble code\n", $self->schemar_preamble, "\n\n") : ()),
 
                     "# DATE\n",
                     "# VERSION\n",
@@ -209,7 +209,7 @@ sub munge_files {
                     "our \$rschema = ", Data::Dmp::dmp($rschema), ";\n",
                     "\n",
 
-                    (defined($self->postamble) ? ("# postamble code\n", $self->postamble, "\n\n") : ()),
+                    (defined($self->schemar_postamble) ? ("# postamble code\n", $self->schemar_postamble, "\n\n") : ()),
 
                     "1;\n",
                     "# ABSTRACT: $sch->[1]{summary}\n",
@@ -370,13 +370,15 @@ build, skip resolving the schema, skip parsing the schema and extracting
 prerequisites from the schema, the and skip creating the corresponding
 C<Sah::SchemaR::*> module.
 
-=head2 preamble
+=head2 schemar_preamble
 
-Code to add at the beginning.
+Code to add at the beginning of generated F<Sah/SchemaR/*.pm> files (put after
+the C<package> statemnet).
 
-=head2 postamble
+=head2 schemar_postamble
 
-Code to add at the end.
+Code to add at the end of generated F<Sah/SchemaR/*.pm> files (put before the
+ending C<1;>).
 
 
 =head1 SEE ALSO
