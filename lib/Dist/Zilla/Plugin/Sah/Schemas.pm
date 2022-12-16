@@ -26,6 +26,10 @@ with (
 
 has exclude_module => (is => 'rw');
 
+has preamble => (is => 'rw');
+
+has postamble => (is => 'rw');
+
 use namespace::autoclean;
 
 sub mvp_multivalue_args { qw(exclude_module) }
@@ -196,12 +200,16 @@ sub munge_files {
                     "package $rpkg;\n",
                     "\n",
 
+                    (defined($self->preamble) ? ("# preamble code\n", $self->preamble, "\n\n") : ()),
+
                     "# DATE\n",
                     "# VERSION\n",
                     "\n",
 
                     "our \$rschema = ", Data::Dmp::dmp($rschema), ";\n",
                     "\n",
+
+                    (defined($self->postamble) ? ("# postamble code\n", $self->postamble, "\n\n") : ()),
 
                     "1;\n",
                     "# ABSTRACT: $sch->[1]{summary}\n",
@@ -361,6 +369,14 @@ Currently this means to exclude loading the specified schema module during
 build, skip resolving the schema, skip parsing the schema and extracting
 prerequisites from the schema, the and skip creating the corresponding
 C<Sah::SchemaR::*> module.
+
+=head2 preamble
+
+Code to add at the beginning.
+
+=head2 postamble
+
+Code to add at the end.
 
 
 =head1 SEE ALSO
