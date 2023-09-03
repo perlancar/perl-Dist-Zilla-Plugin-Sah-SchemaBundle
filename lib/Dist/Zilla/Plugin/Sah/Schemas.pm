@@ -239,8 +239,8 @@ sub gather_files {
 
 use Test::More;
 
-eval "use Test::Sah::Schema 0.010";
-plan skip_all => "Test::Sah::Schema 0.010 required for testing Sah::Schema::* modules"
+eval "use Test::Sah::Schema 0.016";
+plan skip_all => "Test::Sah::Schema 0.016 required for testing Sah::Schema::* modules"
   if $@;
 
 sah_schema_modules_ok();
@@ -269,7 +269,7 @@ sub register_prereqs {
             type  => 'requires',
             phase => 'develop',
         },
-        'Test::Sah::Schema' => '0.010',
+        'Test::Sah::Schema' => '0.016',
     );
 
     # add prereqs to base schema modules
