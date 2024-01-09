@@ -109,6 +109,9 @@ sub munge_files {
         # to be normalized anyway. but to be safer.
         my $nsch = Data::Sah::Normalize::normalize_schema($sch);
 
+        # compile schema to perl code and collect the required modules
+        $self->{_modules_required_by_schema} = {};
+
         # collect other Sah::Schema::* modules that are used, this will
         # be added as prereq
       COLLECT_BASE_SCHEMAS:
@@ -280,55 +283,18 @@ sub register_prereqs {
         $self->zilla->register_prereqs({phase=>'runtime'}, $mod => version_from_pmversions($mod) // 0);
     }
 
-    for my $mod (sort keys %{$self->{_our_schema_modules} // {}}) {
-        my $nsch = ${"$mod\::schema"};
-        my $schr = Data::Sah::Resolve::resolve_schema($nsch);
-        # add prereqs to XCompletion modules
-        {
-            my $xc = $nsch->[1]{'x.completion'};
-            last unless $xc;
-            last if ref $xc eq 'CODE';
-            $xc = $xc->[0] if ref $xc eq 'ARRAY';
-            my $xcmod = "Perinci::Sub::XCompletion::$xc";
-            next if $self->is_package_declared($xcmod);
-            $self->log(["Adding prereq to %s", $xcmod]);
-            $self->zilla->register_prereqs({phase=>'runtime'}, $xcmod => version_from_pmversions($xcmod) // 0);
-        }
-        # add prereqs to coerce modules
-        for my $key ('x.coerce_rules', 'x.perl.coerce_rules') {
-            my $crr = $nsch->[1]{$key};
-            next unless $crr && @$crr;
-            for my $rule (@$crr) {
-                next unless $rule =~ /\A\w+(::\w+)*\z/;
-                my $crmod = "Data::Sah::Coerce::perl::To_$schr->{type}::$rule";
-                next if $self->is_package_declared($crmod);
-                $self->log(["Adding prereq to %s", $crmod]);
-                $self->zilla->register_prereqs({phase=>'runtime'}, $crmod => version_from_pmversions($crmod) // 0);
-            }
-        }
-        # add prereqs to filter modules
-        for my $key ('prefilters', 'postfilters') {
-            my $filters = $nsch->[1]{$key};
-            next unless $filters && @$filters;
-            for my $filter (@$filters) {
-                my $filtername = ref $filter ? $filter->[0] : $filter;
-                my $filtermod = "Data::Sah::Filter::perl::$filtername";
-                next if $self->is_package_declared($filtermod);
-                $self->log(["Adding prereq to %s", $filtermod]);
-                $self->zilla->register_prereqs({phase=>'runtime'}, $filtermod => version_from_pmversions($filtermod) // 0);
-            }
-        }
-        # add prereqs to value rule modules
-        for my $key ('x.perl.default_value_rules') {
-            my $rules = $nsch->[1]{$key};
-            next unless $rules && @$rules;
-            for my $rule (@$rules) {
-                my $rulename = ref $rule ? $rule->[0] : $rule;
-                my $rulemod = "Data::Sah::Value::perl::$rulename";
-                next if $self->is_package_declared($rulemod);
-                $self->log(["Adding prereq to %s", $rulemod]);
-                $self->zilla->register_prereqs({phase=>'runtime'}, $rulemod => version_from_pmversions($rulemod) // 0);
-            }
+    # add prereqs to modules required by schemas when they are compiled to perl
+    for my $schemamod (sort keys %{$self->{_our_schema_modules} // {}}) {
+        $self->log_debug(["Compiling schema %s", $schemamod]);
+        my $nsch = ${"$schemamod\::schema"};
+
+        require Data::Sah;
+        my $cd = Data::Sah->get_compiler("perl")->compile(schema => $nsch, schema_is_normalized=>1);
+
+        for my $modrec (@{ $cd->{modules} }) {
+            next if $self->is_package_declared($modrec->{name});
+            $self->log(["Adding prereq to %s", $modrec->{name}]);
+            $self->zilla->register_prereqs({phase=>'runtime'}, $modrec->{name} => version_from_pmversions($modrec->{name}) // 0);
         }
     }
 }
