@@ -306,6 +306,30 @@ sub register_prereqs {
                 $self->zilla->register_prereqs({phase=>'runtime'}, $crmod => version_from_pmversions($crmod) // 0);
             }
         }
+        # add prereqs to filter modules
+        for my $key ('prefilters', 'postfilters') {
+            my $filters = $nsch->[1]{$key};
+            next unless $filters && @$filters;
+            for my $filter (@$filters) {
+                my $filtername = ref $filter ? $filter->[0] : $filter;
+                my $filtermod = "Data::Sah::Filter::perl::$filtername";
+                next if $self->is_package_declared($filtermod);
+                $self->log(["Adding prereq to %s", $filtermod]);
+                $self->zilla->register_prereqs({phase=>'runtime'}, $filtermod => version_from_pmversions($filtermod) // 0);
+            }
+        }
+        # add prereqs to value rule modules
+        for my $key ('x.perl.default_value_rules') {
+            my $rules = $nsch->[1]{$key};
+            next unless $rules && @$rules;
+            for my $rule (@$rules) {
+                my $rulename = ref $rule ? $rule->[0] : $rule;
+                my $rulemod = "Data::Sah::Value::perl::$rulename";
+                next if $self->is_package_declared($rulemod);
+                $self->log(["Adding prereq to %s", $rulemod]);
+                $self->zilla->register_prereqs({phase=>'runtime'}, $rulemod => version_from_pmversions($rulemod) // 0);
+            }
+        }
     }
 }
 
