@@ -71,7 +71,7 @@ sub _load_schemabundle_modules {
 
     my %res;
     for my $file (@{ $self->found_files }) {
-        next unless $file->name =~ m!^lib/(Sah/Schema(?:s|Bundle)/.+\.pm)$!;
+        next unless $file->name =~ m!^lib/(Sah/SchemaBundle/.+\.pm)$!;
         my $pkg_pm = $1;
         (my $pkg = $pkg_pm) =~ s/\.pm$//; $pkg =~ s!/!::!g;
         require $pkg_pm;
